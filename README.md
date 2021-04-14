@@ -27,6 +27,7 @@ GooseStalker is a project to analyze and interact with Ethernet types associated
 
 * [Pipenv](https://docs.pipenv.org/) - Pipfile should contain all required packages, to include a few nice-to-haves.
   * [Scapy](https://github.com/secdev/scapy) - comes with its own set of required packages
+  * [PyASN1](https://pypi.org/project/pyasn1/) - Python ASN1 module
   * [iPython](https://ipython.org/)
   * cryptography - may or may not need this
 * [Wireshark](https://www.wireshark.org/) - you'll want a second source to analyze PCAPs
