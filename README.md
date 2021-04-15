@@ -8,8 +8,9 @@ GooseStalker is a project to analyze and interact with Ethernet types associated
 
 * Goose
   * goose.py - Scapy layers to analyze packets (see TODO)
+  * goose_pdu.py - ASN1 layers to analyze Goose data
 * Scripts
-  * goose_parser.py - script to test the Scapy layers and parsing. Outputs text version of Goose layers and data.
+  * goose_parser.py - script to display the Scapy layers and parsed Goose data. Outputs text version of Goose layers and data.
 * PCAPS  
   * GOOSE_wireshark.pcap - Wireshark's PCAP file for testing. This does not contain messages with VLAN layers (see TODO list).
   * [ITI IEC61850 Goose PCAPS](https://github.com/ITI/ICS-Security-Tools/tree/master/pcaps/IEC61850)
@@ -37,6 +38,9 @@ GooseStalker is a project to analyze and interact with Ethernet types associated
 
 ## TODO
 
-* Parse data into a dictionary to compute statistics
+* Convert parser into module for other scripts
+* Script to provide packet statistics
+* Script to identify endpoints
+* Script to identify control packets
 * Replay script
 * Spoofing script
