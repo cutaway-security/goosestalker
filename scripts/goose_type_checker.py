@@ -48,36 +48,54 @@ def gooseTest(pkt):
         if pkt['Ether'].type == GOOSE_TYPE: isGoose = True
     return isGoose
 
+GOOSE_TYPE1 = 0x88b8
+GOOSE_MAN   = 0x88b9
+GOOSE_SVALS = 0x88ba
+GOOSE_TYPES = [GOOSE_TYPE1,GOOSE_MAN,GOOSE_SVALS]
+def gooseTypeTest(pkt):
+    typeGoose = 0
+    # Test for a Goose Ether Type
+    if pkt.haslayer('Dot1Q'):
+        if pkt['Dot1Q'].type in GOOSE_TYPES: typeGoose = pkt['Dot1Q'].type
+    if pkt.haslayer('Ether'):
+        if pkt['Ether'].type in GOOSE_TYPES: typeGoose = pkt['Ether'].type
+    return typeGoose
+
 ###############################
 # Process packets and search for GOOSE
 ###############################
-cnt_sec   = 0
-cnt_nosec = 0
-indent    = '    '
+goose_type1   = 0
+goose_type1a  = 0
+goose_manage  = 0
+goose_svalues = 0
+goose_type1a_appid = 0x8000
+indent        = '    '
 for p in packets:
     # Only process Goose Packets
     if gooseTest(p):
         # Use SCAPY to parse the Goose header and the Goose PDU header
         d = GOOSE(p.load)
 
-        # Test Goose Reserve1 Byte
-        # FIXME: This byte also contains bits for simulation and future standardization. 
-        #       Ignore until a mask can be made for security bits.
+        # Test Ethertype
+        gtype = gooseTypeTest(p)
+        gappid = d.appid
+        if gtype == GOOSE_TYPE1:
+            if gappid >= goose_type1a_appid:
+                goose_type1a = goose_type1a + 1
+            else:
+                goose_type1 = goose_type1 + 1
+        if gtype == GOOSE_MAN:
+            goose_manage = goose_manage + 1
+        if gtype == GOOSE_SVALS:
+            goose_svalues = goose_svalues + 1
 
-        # Test Goose Reserved2 Byte - this will contain a CRC if security enabled, else 0x0000
-        if d.reserved2 > 0x0000:
-            cnt_sec = cnt_sec + 1
-        else: 
-            cnt_nosec = cnt_nosec + 1
-
-        # Test Goose PDU for Security information
-        # TODO: Add this test if this can be implemented without setting Reserved1 and / or Reserved2 bytes
-        # TODO: Add this test or a separate script to collect and report useful security information.
 
 ###############################
 # Print Statements and Functions
 ###############################
 ## Normal Print Statement
-print('Goose Packets: %d'%(cnt_sec + cnt_nosec))
-print('%sSecurity: %d'%(indent,cnt_sec))
-print('%sNo Security: %d'%(indent,cnt_nosec))
+print('Goose Packets: %d'%(goose_type1 + goose_type1a + goose_manage + goose_svalues))
+print('%sType 1        : %d'%(indent,goose_type1))
+print('%sType 1a       : %d'%(indent,goose_type1a))
+print('%sGSE Management: %d'%(indent,goose_manage))
+print('%sSampled Values: %d'%(indent,goose_svalues))
