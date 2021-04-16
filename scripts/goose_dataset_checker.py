@@ -85,7 +85,8 @@ def goose_pdu_decode(encoded_data):
 ###############################
 # Process packets and search for GOOSE
 ###############################
-vlans = {}
+# datasets = {src_mac:{'gocbref':GoCBRef, 'dataset':DataSet, 'goid':GoID}}
+datasets = {}
 for p in packets:
     # Only process Goose Packets
     if gooseTest(p):
@@ -98,29 +99,24 @@ for p in packets:
         # Use PYASN1 to parse the Goose PDU
         gd = goose_pdu_decode(gpdu)
 
-        gocbRef = str(gd['gocbRef'])
         src_mac = p['Ether'].src
-        dst_mac = p['Ether'].dst
-        device = ('%s - %s'%(src_mac,gocbRef))
-        if p.vlan in vlans.keys():
-            if device not in vlans[p.vlan]['src']:
-                vlans[p.vlan]['src'].append(device)
-            if dst_mac not in vlans[p.vlan]['dst']:
-                vlans[p.vlan]['dst'].append(dst_mac)
+        gocbref = str(gd['gocbRef'])
+        dataset = str(gd['datSet'])
+        goid    = str(gd['goID'])
+        godata = '%s - %s - %s'%(gocbref, dataset, goid)
+        if src_mac in datasets.keys():
+            if godata not in datasets[src_mac]:
+                datasets[src_mac].append(godata)
         else:
-            vlans[p.vlan] = {'src':[device],'dst':[dst_mac]}
+            datasets[src_mac] = [godata]
 
 ###############################
 # Print Statements and Functions
 ###############################
 ## Normal Print Statement
-print('Goose VLANS by Device Hardware Address')
-indent    = '    '
-for vid in vlans.keys():
-    print('VLAN ID: %s'%(vid))
-    print('%sSource Device:'%(indent))
-    for s in vlans[vid]['src']:
-        print('%s%s'%(indent*2,s))
-    print('%sMulticast Address:'%(indent))
-    for d in vlans[vid]['dst']:
-        print('%s%s'%(indent*2,d))
+print('Goose Data by Device Hardware Address')
+indent = '    '
+for src in datasets.keys():
+    print('Source Device: %s'%(src))
+    for e in datasets[src]:
+        print('%s%s'%(indent,e))
