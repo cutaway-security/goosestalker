@@ -17,7 +17,7 @@ from scapy.compat import raw
 from scapy.all import rdpcap
 
 ###############################
-# Import Keith's Goose
+# Import Goose module
 ###############################
 # We have to tell script where to find the Goose module in parent directory
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -121,7 +121,7 @@ def gooseASN1_DataPrint_vendorA(data):
             continue
 
 ###############################
-# Process GOOSE PDU by decoding it
+# Process GOOSE PDU by decoding it with PYASN1
 ###############################
 def goose_pdu_decode(encoded_data):
 
