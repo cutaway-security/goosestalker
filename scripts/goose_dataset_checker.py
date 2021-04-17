@@ -103,7 +103,8 @@ for p in packets:
         gocbref = str(gd['gocbRef'])
         dataset = str(gd['datSet'])
         goid    = str(gd['goID'])
-        godata = '%s - %s - %s'%(gocbref, dataset, goid)
+        numDatSetEntries = int(gd['numDatSetEntries'])
+        godata = '%s - %s - %s - %s'%(gocbref, dataset, goid, numDatSetEntries)
         if src_mac in datasets.keys():
             if godata not in datasets[src_mac]:
                 datasets[src_mac].append(godata)

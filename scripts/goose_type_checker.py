@@ -68,6 +68,7 @@ goose_type1   = 0
 goose_type1a  = 0
 goose_manage  = 0
 goose_svalues = 0
+goose_sv_appid     = 0x4000
 goose_type1a_appid = 0x8000
 indent        = '    '
 for p in packets:
@@ -84,10 +85,11 @@ for p in packets:
                 goose_type1a = goose_type1a + 1
             else:
                 goose_type1 = goose_type1 + 1
-        if gtype == GOOSE_MAN:
-            goose_manage = goose_manage + 1
+        # TODO: Determine if Sampled Values requires APPID between 0x4000 and 0x7fff and EtherType 0x88ba
         if gtype == GOOSE_SVALS:
             goose_svalues = goose_svalues + 1
+        if gtype == GOOSE_MAN:
+            goose_manage = goose_manage + 1
 
 
 ###############################
