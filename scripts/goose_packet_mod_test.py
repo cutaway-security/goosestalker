@@ -73,7 +73,8 @@ def gooseASN1_DataPrint(data):
             print('%s: %s'%(e,int(data[e])))
             continue
         if type(data[e]) == UtcTime:
-            print('%s: %s'%(e,datetime.datetime.fromtimestamp(int.from_bytes(bytearray(gd[e])[:4],'big')).strftime('%Y-%m-%d %H:%M:%S')))
+            #print('%s: %s'%(e,datetime.datetime.fromtimestamp(int.from_bytes(bytearray(data[e])[:4],'big')).strftime('%Y-%m-%d %H:%M:%S')))
+            print('%s: %s'%(e,timeStrFrom64bits(bytearray(data[e])[:4])))
             continue
         if type(data[e]) == univ.Boolean:
             print('%s: %s'%(e,str(data[e])))
@@ -135,6 +136,13 @@ def curTime64Bits(utc=False):
     curTimeInt64Str = curTimeInt64.to_bytes(8,'big')
     return curTimeInt64Str
 
+def timeStrFrom64bits(t):
+    # Microsecond Resolution Ignored
+    #if args.DEBUG: print('In timeToString')
+    time32Int = int.from_bytes(t[:4],'big')
+    time32Str = datetime.datetime.fromtimestamp(time32Int).strftime('%Y-%m-%d %H:%M:%S')
+    return time32Str
+
 ###############################
 # Process packets and search for GOOSE
 ###############################
@@ -182,13 +190,6 @@ mod_gd   = goose_pdu_decode(mod_gpdu)
 tmpSTNUM = mod_gd.getComponentByName('stNum')
 tmpSQNUM = mod_gd.getComponentByName('sqNum')
 
-## Increment stNum
-mod_gd.setComponentByName('stNum', (int(tmpSTNUM) + 1))
-## Reset sqNum, note that we will need to increment this or increment stNum and keep this 0
-mod_gd.setComponentByName('sqNum', 0)
-new_time = curTime64Bits().decode('latin-1')
-mod_gd.setComponentByName('t',new_time)
-
 # Toggle Boolean Values
 for e in range(mod_gd['numDatSetEntries']):
     if mod_gd['allData'].getComponentByPosition(e) == False:
@@ -198,8 +199,17 @@ for e in range(mod_gd['numDatSetEntries']):
         mod_gd['allData'].setComponentByPosition(e,tmpF)
         continue
 
+## Increment stNum
+mod_gd.setComponentByName('stNum', (int(tmpSTNUM) + 1))
+## Reset sqNum, note that we will need to increment this or increment stNum and keep this 0
+mod_gd.setComponentByName('sqNum', 0)
+new_time = curTime64Bits()
+mod_gd.setComponentByName('t',new_time)
+
+
 # Encode the modified data
 en_gd = encoder.encode(mod_gd)
+print('EN_GD: %s'%(en_gd))
 
 # Rebuild the packet payload
 mod_p.load = mod_p_load_start + en_gd + mod_p_load_end
