@@ -36,6 +36,7 @@ from goose.goose_pdu import UtcTime
 # Global Variables
 ###############################
 DEBUG = 0   # 0: off 1: Show Goose Payload 2: Full Debug
+UTC   = 1   # 0: local time 1: UTC Time
 
 ###############################
 # Import packets into SCAPY
@@ -113,24 +114,16 @@ def goose_pdu_decode(encoded_data):
     # This should work, but not sure.
     return decoded_data
 
-def curTimeBytes():
-    #if DEBUG: print('In curTimeBytes')
-    curTime = int(time.time())
-    curTimeBytes = struct.pack('>i',int(time.time()))
-    return curTimeBytes
-
+###############################
+# Time has to be 64-bits or 8-bytes
+###############################
 def curTime64Bits(utc=False):
     # Microsecond Resolution Ignored
-    #if args.DEBUG: print('In curTimeBytes')
-    # FIXME: Include designating local or UTC time.
-    '''
-    if utc:
-        curTime = time.mktime(datetime.utcnow().timetuple())
+    if UTC:
+        curTime = time.mktime(datetime.datetime.utcnow().timetuple())
     else:
-        curTime = time.mktime(datetime.now().timetuple())
-    '''
+        curTime = time.mktime(datetime.datetime.now().timetuple())
 
-    curTime = time.mktime(datetime.datetime.utcnow().timetuple())
     curTimeInt = int(curTime)
     curTimeInt64 = (curTimeInt << 32)
     curTimeInt64Str = curTimeInt64.to_bytes(8,'big')
@@ -138,7 +131,6 @@ def curTime64Bits(utc=False):
 
 def timeStrFrom64bits(t):
     # Microsecond Resolution Ignored
-    #if args.DEBUG: print('In timeToString')
     time32Int = int.from_bytes(t[:4],'big')
     time32Str = datetime.datetime.fromtimestamp(time32Int).strftime('%Y-%m-%d %H:%M:%S')
     return time32Str
@@ -217,22 +209,24 @@ mod_p.load = mod_p_load_start + en_gd + mod_p_load_end
 ###############################
 # Show original packet
 ###############################
-print('###############################')
-print('Original Data')
-print('###############################')
-gooseASN1_DataPrint(gd)
-print('\n\n###############')
-print('Original Packet:')
-print('###############')
-p.show()
+if DEBUG > 1:
+    print('###############################')
+    print('Original Data')
+    print('###############################')
+    gooseASN1_DataPrint(gd)
+    print('\n\n###############')
+    print('Original Packet:')
+    print('###############')
+    p.show()
 
 ###############################
 # Show update packet
 ###############################
-print('###############################')
-print('Updated Data')
-print('###############################')
-gooseASN1_DataPrint(mod_gd)
+if DEBUG:
+    print('###############################')
+    print('Updated Data')
+    print('###############################')
+    gooseASN1_DataPrint(mod_gd)
 print('\n\n###############')
 print('New Packet:')
 print('###############')
