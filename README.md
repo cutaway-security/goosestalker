@@ -25,6 +25,7 @@ GooseStalker is a project to analyze and interact with Ethernet types associated
   * [Utilization of IEC 61850 GOOSE messaging in protection applications in distribution network](https://library.e.abb.com/public/dc853877595c4086ae649ca29924c0ec/Paper_GOOSE%20Utilisation%20in%20Protection.pdf)
   * [A Practical Guide of Troubleshooting IEC 61850 GOOSE Communication](http://prorelay.tamu.edu/wp-content/uploads/sites/3/2017/04/A-Pratical-Guide-of-Troubleshooting-IEC-61850-GOOSE-communicaiton-Wei-Huang.pdf)
   * [Relion® Protection and Control IEC 61850 615 series Engineering Guide](https://library.e.abb.com/public/3d6fbd4567e4bda6c1257b130056a8aa/IEC_61850_Engineering_Guide_756475_ENd.pdf)
+  * [GE Grid: IEC 61850 Communication Networks and Systems In Substations: An Overview for Users](https://www.gegridsolutions.com/multilin/journals/issues/spring09/iec61850.pdf)
 * LICENSE - maintained the Keith's original MIT license for this work
 * Pipfile - required Python modules. Probably contains a few more than necessary to allow for additional development. See requirements below.
 
