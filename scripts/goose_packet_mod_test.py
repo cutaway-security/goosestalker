@@ -131,8 +131,9 @@ def curTime64Bits(utc=False):
 
 def timeStrFrom64bits(t):
     # Microsecond Resolution Ignored
-    time32Int = int.from_bytes(t[:4],'big')
-    time32Str = datetime.datetime.fromtimestamp(time32Int).strftime('%Y-%m-%d %H:%M:%S')
+    # Convert goose.pdu.UTCTime to bytes
+    time32Int = int.from_bytes(bytes(t)[:4],'big')
+    time32Str = datetime.datetime.utcfromtimestamp(time32Int).strftime('%Y-%m-%d %H:%M:%S')
     return time32Str
 
 ###############################
