@@ -77,7 +77,10 @@ echo; done
 
 ```console
 CutSec 21-12-13 9:37:45
-> for s in goose_type_checker.py goose_routable_checker.py goose_security_checker.py goose_device_cnt.py goose_time_sync_checker.py goose_dataset_checker.py; do echo; echo ################; echo $s; echo ################; python3 ./$s ../PCAPs/GOOSE_wireshark.pcap; echo; done
+> for s in goose_type_checker.py goose_routable_checker.py goose_security_checker.py \ 
+goose_device_cnt.py goose_time_sync_checker.py goose_dataset_checker.py; do echo; \ 
+echo ################; echo $s; echo ################; python3 ./$s ../PCAPs/GOOSE_wireshark.pcap; \ 
+echo; done
 
 ################
 goose_type_checker.py
