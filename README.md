@@ -38,10 +38,32 @@ GooseStalker is a project to analyze and interact with Ethernet types associated
 python3 ./goose_device_cnt.py <file.pcapng>
 ```
 
+```console
+CutSec 21-12-13 9:37:52
+> python3 ./goose_device_cnt.py ../PCAPs/GOOSE_wireshark.pcap
+##################################################
+### Goose Source Interface Address and Destination Addresses with Goose ID
+##################################################
+Goose Device Count: 1
+
+Source Address,Destivation Address,goID
+00:a0:f4:08:2f:77,01:a0:f4:08:2f:77,F650_GOOSE1
+```
+
 #### Type of Goose messages
 
 ```shell
 python3 ./goose_type_checker.py <file.pcapng>
+```
+
+```console
+CutSec 21-12-13 9:40:30
+> python3 ./goose_type_checker.py ../PCAPs/GOOSE_wireshark.pcap
+Goose Packets: 8
+    Type 1        : 8
+    Type 1a       : 0
+    GSE Management: 0
+    Sampled Values: 0
 ```
 
 #### Audit Goose configurations by running multiple scripts on a single file
@@ -51,6 +73,72 @@ for inf in goose_type_checker.py goose_routable_checker.py goose_security_checke
 goose_device_cnt.py goose_time_sync_checker.py goose_dataset_checker.py; do echo; \
 echo ################; echo $inf; echo ################; python3 ./$inf <file.pcapng>; \
 echo; done
+```
+
+```console
+CutSec 21-12-13 9:37:45
+> for s in goose_type_checker.py goose_routable_checker.py goose_security_checker.py goose_device_cnt.py goose_time_sync_checker.py goose_dataset_checker.py; do echo; echo ################; echo $s; echo ################; python3 ./$s ../PCAPs/GOOSE_wireshark.pcap; echo; done
+
+################
+goose_type_checker.py
+################
+Goose Packets: 8
+    Type 1        : 8
+    Type 1a       : 0
+    GSE Management: 0
+    Sampled Values: 0
+
+
+################
+goose_routable_checker.py
+################
+Routable Goose and Sampled Values
+    No routable Goose or Sampled Values detected.
+
+
+################
+goose_security_checker.py
+################
+Goose Packets: 8
+    Security: 0
+    No Security: 8
+
+
+################
+goose_device_cnt.py
+################
+##################################################
+### Goose Source Interface Address and Destination Addresses with Goose ID
+##################################################
+Goose Device Count: 1
+
+Source Address,Destivation Address,goID
+00:a0:f4:08:2f:77,01:a0:f4:08:2f:77,F650_GOOSE1
+
+
+################
+goose_time_sync_checker.py
+################
+##################################################
+### Goose Timestamps and TTL by Goose ID and stNum
+### NOTE: Devices times can be different and not
+###       have a negative impact on operations.
+###       Goose devices are more interested in
+###       message timing than device time.
+##################################################
+Source Device: F650_GOOSE1
+    1 : 2000-01-02 02:46:11 : 40000
+    1 : 2000-01-02 02:47:29 : 1000
+    1 : 2000-01-02 02:47:29 : 2000
+    1 : 2000-01-02 02:47:29 : 40000
+
+
+################
+goose_dataset_checker.py
+################
+Goose Data by Device Hardware Address
+Source Device: 00:a0:f4:08:2f:77
+    GEDeviceF650/LLN0$GO$gcb01 - GEDeviceF650/LLN0$GOOSE1 - F650_GOOSE1 - 8
 ```
 
 ### IPython Usage
