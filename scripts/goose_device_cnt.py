@@ -82,22 +82,11 @@ def goose_pdu_decode(encoded_data):
     # This should work, but not sure.
     return decoded_data
 
-
-###############################
-# Time has to be 64-bits or 8-bytes
-###############################
-def timeStrFrom64bits(t):
-    # Microsecond Resolution Ignored
-    # Convert goose.pdu.UTCTime to bytes
-    time32Int = int.from_bytes(bytes(t)[:4],'big')
-    time32Str = datetime.datetime.utcfromtimestamp(time32Int).strftime('%Y-%m-%d %H:%M:%S')
-    return time32Str
-
 ###############################
 # Process packets and search for GOOSE
 ###############################
-# msgdates = {goid:(gostnum,gotime,gottl)}
-msgdates = {}
+# devsrc = {src_mac:(dst_mac:goid)}
+devsrc = {}
 for p in packets:
     # Only process Goose Packets
     if gooseTest(p):
@@ -110,33 +99,35 @@ for p in packets:
         # Use PYASN1 to parse the Goose PDU
         gd = goose_pdu_decode(gpdu)
 
-        # Grab Goose ID and check stNums
+        # Grab Source address, destination address, and Goose ID
+        src_mac = p['Ether'].src
+        dst_mac = p['Ether'].dst
         goid    = str(gd['goID'])
-        gostnum = str(gd['stNum'])
-        gottl   = str(gd['timeAllowedtoLive'])
-        gotime  = '%s'%(timeStrFrom64bits(gd['t']))
+
         # Combine stNum and t as they are related
-        msgtime = (gostnum, gotime, gottl)
-        if goid in msgdates.keys():
-            if msgtime not in msgdates[goid]:
-                msgdates[goid].append(msgtime)
+        devgoose = (dst_mac, goid)
+        if src_mac in devsrc.keys():
+            if devgoose not in devsrc[src_mac]:
+                devsrc[src_mac].append(devgoose)
         else:
-            msgdates[goid] = [msgtime]
+            devsrc[src_mac] = [devgoose]
 
 ###############################
 # Print Statements and Functions
 ###############################
 ## Normal Print Statement
 print('##################################################')
-print('### Goose Timestamps and TTL by Goose ID and stNum')
+print('### Goose Source Interface Address and Destination Addresses with Goose ID')
 print('##################################################')
 indent = '    '
-for goID in msgdates.keys():
-    print('Source Device: %s'%(goID))
+print('Goose Device Count: %s\n'%(len(devsrc.keys())))
 
-    # Print all
-    for e in msgdates[goID]:
-        # Each stNum should have a unique timestamp
-        # Incrementing sqNum does NOT affect timestamp
-        # TTL does not seem to be tied to stNum, included only for reference
-        print('%s%s : %s : %s'%(indent,e[0],e[1],e[2]))
+print('Source Address,Destivation Address,goID')
+for src_mac in devsrc.keys():
+    #print('Source Device: %s'%(src_mac))
+
+    # Print all as CSV
+    for e in devsrc[src_mac]:
+        # Each device should have a destination mac and a goID
+        #print('%s%s : %s'%(indent,e[0],e[1]))
+        print('%s,%s,%s'%(src_mac,e[0],e[1]))
