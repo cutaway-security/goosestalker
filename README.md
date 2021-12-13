@@ -115,7 +115,7 @@ goose_device_cnt.py
 ##################################################
 Goose Device Count: 1
 
-Source Address,Destivation Address,goID
+Source Address,Destination Address,goID
 00:a0:f4:08:2f:77,01:a0:f4:08:2f:77,F650_GOOSE1
 
 

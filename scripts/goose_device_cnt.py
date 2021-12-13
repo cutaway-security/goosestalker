@@ -122,7 +122,7 @@ print('##################################################')
 indent = '    '
 print('Goose Device Count: %s\n'%(len(devsrc.keys())))
 
-print('Source Address,Destivation Address,goID')
+print('Source Address,Destination Address,goID')
 for src_mac in devsrc.keys():
     #print('Source Device: %s'%(src_mac))
 
