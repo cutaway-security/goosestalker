@@ -47,9 +47,9 @@ python3 ./goose_type_checker.py <file.pcapng>
 #### Audit Goose configurations by running multiple scripts on a single file
 
 ```shell
-for s in goose_type_checker.py goose_routable_checker.py goose_security_checker.py \
+for inf in goose_type_checker.py goose_routable_checker.py goose_security_checker.py \
 goose_device_cnt.py goose_time_sync_checker.py goose_dataset_checker.py; do echo; \
-echo ################; echo $s; echo ################; python3 ./$s <file.pcapng; \
+echo ################; echo $inf; echo ################; python3 ./$inf <file.pcapng>; \
 echo; done
 ```
 
