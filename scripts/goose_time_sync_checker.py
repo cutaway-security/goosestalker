@@ -129,7 +129,12 @@ for p in packets:
 ## Normal Print Statement
 print('##################################################')
 print('### Goose Timestamps and TTL by Goose ID and stNum')
+print('### NOTE: Devices times can be different and not  ')
+print('###       have a negative impact on operations.   ')
+print('###       Goose devices are more interested in    ')
+print('###       message timing than device time.        ')
 print('##################################################')
+
 indent = '    '
 for goID in msgdates.keys():
     print('Source Device: %s'%(goID))
