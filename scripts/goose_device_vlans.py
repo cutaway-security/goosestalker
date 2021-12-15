@@ -85,6 +85,7 @@ def goose_pdu_decode(encoded_data):
 ###############################
 # Process packets and search for GOOSE
 ###############################
+# vlans = {'src':[],'dst':[],'prio':[]}
 vlans = {}
 for p in packets:
     # Only process Goose Packets
@@ -102,25 +103,37 @@ for p in packets:
         src_mac = p['Ether'].src
         dst_mac = p['Ether'].dst
         device = ('%s - %s'%(src_mac,gocbRef))
-        if p.vlan in vlans.keys():
-            if device not in vlans[p.vlan]['src']:
-                vlans[p.vlan]['src'].append(device)
-            if dst_mac not in vlans[p.vlan]['dst']:
-                vlans[p.vlan]['dst'].append(dst_mac)
-        else:
-            vlans[p.vlan] = {'src':[device],'dst':[dst_mac]}
+        # Not all Goose networks have VLANs
+        if p.haslayer(Dot1Q):
+            pvlan = p.vlan
+            prio = p.prio
+            if pvlan in vlans.keys():
+                if device not in vlans[pvlan]['src']:
+                    vlans[pvlan]['src'].append(device)
+                if dst_mac not in vlans[pvlan]['dst']:
+                    vlans[pvlan]['dst'].append(dst_mac)
+                # Not sure if a VLAN's priority can change, so build a list, just in case
+                if prio not in vlans[pvlan]['prio']:
+                    vlans[pvlan]['prio'].append(prio)
+            else:
+                vlans[pvlan] = {'src':[device],'dst':[dst_mac],'prio':[prio]}
 
 ###############################
 # Print Statements and Functions
 ###############################
 ## Normal Print Statement
+if not vlans:
+    print('\nERROR: Packets in PCAP did not contain VLAN layers')
+    exit()
+
 print('Goose VLANS by Device Hardware Address')
 indent    = '    '
 for vid in vlans.keys():
-    print('VLAN ID: %s'%(vid))
-    print('%sSource Device:'%(indent))
+    # Print VLAN ID and all priorities. Prio is a list of integers, so convert
+    print('VLAN ID: %s has Priorities: %s'%(vid,', '.join(map(str,vlans[vid]['prio']))))
+    print('%sSource Devices:'%(indent))
     for s in vlans[vid]['src']:
         print('%s%s'%(indent*2,s))
-    print('%sMulticast Address:'%(indent))
+    print('%sMulticast Addresses:'%(indent))
     for d in vlans[vid]['dst']:
         print('%s%s'%(indent*2,d))
